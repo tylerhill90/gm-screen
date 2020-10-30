@@ -114,7 +114,7 @@ Campaign
   <div class='child inline-block-child' id="init_form">
     <form id="char_inits">
       {% for char in chars %}
-      <strong>{{ char.name }}: </strong><input type="number" min="1" max="50" style="width: 200px;"
+      <strong>{{ char.name }}</strong><br><input type="number" min="1" max="50" style="width: 200px;"
         name="{{ char.name }}" placeholder="{{ char.name }}'s Initiative"><br>
       {% endfor %}
       <button type="button" onclick="orderCharInits()">Order Player Initiative</button><br><br>
