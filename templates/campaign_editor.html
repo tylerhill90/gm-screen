@@ -1,0 +1,120 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Campaign Editor
+{% endblock %}
+
+{% block main %}
+
+<style>
+    h1{
+        font-family: "Freckle Face", cursive;
+        text-align: center;
+        font-size: 36px;
+    }
+
+    h2{
+      text-align: center;
+    }
+
+    .form-style{
+    margin-left: 25%;
+    margin-right: 25%;
+    }
+
+    .all_chars{
+      text-align: center;
+    }
+
+    .characters{
+      display: inline-block;
+      padding: 20px;
+    }
+
+</style>
+
+<h1>
+    {{ camp_name }}
+</h1>
+
+<div class="container">
+  <h2>New Character</h2>
+  <div class="form-style">
+      <form class="form-horizontal" action="{{ url_for('store_char') }}" method=post autocomplete="off">
+        <div class="form-group">
+          <label class="control-label col-sm-2" for="name">Name:</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="name" placeholder="Enter character's name" name="name" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="control-label col-sm-2" for="race">Race:</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="race" placeholder="Enter character's race" name="race" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="control-label col-sm-2" for="class">Class:</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="class" placeholder="Enter character's class" name="class" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="control-label col-sm-2" for="spell_save">Spell Save DC:</label>
+          <div class="col-sm-10">
+            <input type="number" min="0" max="50" class="form-control" id="spell_save" placeholder="Enter character's Spell Save DC" name="spell_save" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="control-label col-sm-2" for="ac">AC:</label>
+          <div class="col-sm-10">
+            <input type="number" min="1" max="50" class="form-control" id="ac" placeholder="Enter character's AC" name="ac" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="control-label col-sm-2" for="hp">Max HP:</label>
+          <div class="col-sm-10">
+            <input type="number" min="1" max="400" class="form-control" id="hp" placeholder="Enter character's max HP" name="hp" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-default">Submit Character</button>
+          </div>
+        </div>
+      </form>
+  </div>
+</div>
+
+<br>
+
+<h2>
+  Characters in {{ camp_name }}
+</h2>
+<div class="all_chars">
+  {% for char in chars %}
+    <div class="characters">
+        <strong>Name:</strong> {{ char.name }}<br>
+        <strong>Race:</strong> {{ char.race }}<br>
+        <strong>Class:</strong> {{ char.class }}<br>
+        <strong>Spell Save DC:</strong> {{ char.spell_save }}<br>
+        <strong>AC:</strong> {{ char.ac }}<br>
+        <strong>Max HP:</strong> {{ char.hp }}<br>
+        <form class="form-horizontal" action="{{ url_for('edit_char') }}" method=post>
+          <button type="submit" class="btn btn-default" name="edit_char" value="{{ char.id }}">Edit Character</button>
+        </form>
+    </div>
+  {% endfor %}
+</div>
+<div style="text-align: center;">
+  <form id="play_camp" action="{{ url_for('play_campaign') }}" method=post>
+    <button type="submit" class="btn btn-default" name="play_camp" value="{{ camp_name }}">Play Campaign</button>
+  </form>
+</div>
+{% endblock %}

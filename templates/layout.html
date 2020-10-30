@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <link href="https://fonts.googleapis.com/css?family=Freckle+Face" rel="stylesheet">
+
+        <style>
+
+            .navbar-default .navbar-brand{
+                font-family: 'Freckle Face', cursive;
+                font-size: 28px;
+            }
+
+            .navbar-default{
+                font-size: 17px;
+                font-weight: bold;
+            }
+
+        </style>
+
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"/>
+
+        <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+        <title>GM Screen: {% block title %}{% endblock %}</title>
+
+    </head>
+
+    <body>
+
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="{{ url_for('index') }}">GM Screen</a>
+                </div>
+
+                    <script>
+                        //GOOGLE SEARCH
+                        //Enter domain of site to search.
+                        var domainroot="roll20.net"
+                        function Gsitesearch(curobj){ curobj.q.value="site:"+domainroot+" "+curobj.qfront.value }
+                    </script>
+
+                    <form class="search navbar-form navbar-left" target="_blank" action="http://www.google.com/search" method="get"role="search" onSubmit="Gsitesearch(this)" autocomplete="off">
+                        <div class="input-group"> <input name="q" type="hidden" />
+                            <input class="form-control" name="qfront" type="search" required class="searchField" placeholder="Roll20 Search" maxlength="50"/>
+                            <span class="input-group-btn"> <button type="submit" class="search-button btn btn-primary"> <span class="glyphicon glyphicon-search"></span> </button> </span>
+                        </div>
+                    </form>
+
+                    {% if session.user_id %}
+                        <ul class="nav navbar-nav navbar-right">
+                            <li><a class="nav-link" href="{{ url_for('account') }}">Account</a></li>
+                            <li><a class="nav-link" href="{{ url_for('logout') }}">Log Out</a></li>
+                        </ul>
+                    {% else %}
+                        <ul class="nav navbar-nav navbar-right">
+                            <li><a class="nav-link" href="{{ url_for('register') }}">Sign Up</a></li>
+                            <li><a class="nav-link" href="{{ url_for('login') }}">Login</a></li>
+                        </ul>
+                    {% endif %}
+            </div>
+        </nav>
+            <main>
+                {% block main %}{% endblock %}
+            </main>
+
+        </div>
+
+    </body>
+
+</html>

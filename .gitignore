@@ -1,0 +1,9 @@
+*.*
+/*
+!/templates
+!*.md
+!*.txt
+!*.py
+!*.html
+!*.db
+!.gitignore

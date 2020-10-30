@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Account
+{% endblock %}
+
+{% block main %}
+<style>
+    h1{
+        font-family: "Freckle Face", cursive;
+        text-align: center;
+        font-size: 36px;
+    }
+
+    #new_camp, #old_camp, #play_camp {
+        text-align: center;
+    }
+
+</style>
+
+<h1>
+    {{ username }}
+</h1>
+
+<p>
+    <form id="new_camp" action="{{ url_for('campaign_editor') }}" method=post autocomplete="off">
+        <input type="text" name="new_camp" placeholder="Campaign Name" required>
+        <button type="submit" value="Submit">Edit New Campaign</button>
+    </form>
+
+    <br>
+
+    <form id="old_camp" action="{{ url_for('retrieve_old_campaign') }}" method=post>
+        <select id="old_camp" name="old_camp">
+            {% for campaign in campaigns %}
+                <option value="{{ campaign }}">{{ campaign }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" value="Submit">Edit Old Campaign</button>
+    </form>
+
+    <br>
+
+    <form id="play_camp" action="{{ url_for('play_campaign') }}" method=post>
+        <select id="play_camp" name="play_camp">
+            {% for campaign in campaigns %}
+                <option value="{{ campaign }}">{{ campaign }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" value="Submit">Play Campaign</button>
+    </form>
+
+</p>
+{% endblock %}
