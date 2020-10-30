@@ -6,4 +6,5 @@
 !*.py
 !*.html
 !*.db
+!*.png
 !.gitignore
