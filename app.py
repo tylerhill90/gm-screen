@@ -53,7 +53,6 @@ db = SQL("sqlite:///GMscreen.db")
 
 
 @app.route("/", methods=["GET", "POST"])
-# @login_required  CHANGE ME LATER!!!!!!!!!!!!!!
 def index():
 
     # do some stuff
@@ -129,6 +128,8 @@ def account():
         'SELECT campaign_name FROM campaigns WHERE user_id=:user_id', user_id=session["user_id"])
     campaigns = [query[x]['campaign_name'].strip(
         "'") for x in range(len(query))]
+
+    print(query)
 
     return render_template("account.html", username=username, campaigns=campaigns)
 

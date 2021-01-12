@@ -29,7 +29,7 @@
     </form>
 
     <br>
-
+    {% if campaigns %}
     <form id="old_camp" action="{{ url_for('retrieve_old_campaign') }}" method=post>
         <select id="old_camp" name="old_camp">
             {% for campaign in campaigns %}
@@ -49,6 +49,6 @@
         </select>
         <button type="submit" value="Submit">Play Campaign</button>
     </form>
-
+    {% endif %}
 </p>
 {% endblock %}
