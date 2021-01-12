@@ -1,87 +1,90 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    Campaign
+Campaign
 {% endblock %}
 
 {% block main %}
 <style>
-    h2{
-    text-align: center;
+    h2 {
+        text-align: center;
     }
 
-    .form-style{
-    margin-left: 25%;
-    margin-right: 25%;
+    .form-style {
+        margin-left: 25%;
+        margin-right: 25%;
     }
-
 </style>
 
 <div class="container">
-  <h2>Edit Character</h2>
+    <h2>Edit Character</h2>
     <div class="form-style">
         <form class="form-horizontal" action="{{ url_for('update_char') }}" method=post autocomplete="off">
-        <div class="form-group">
-            <label class="control-label col-sm-2" for="name">Name:</label>
-            <div class="col-sm-10">
-                <input type="text" class="form-control" id="name" value="{{ char.name }}" name="name" required>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label class="control-label col-sm-2" for="race">Race:</label>
-            <div class="col-sm-10">
-                <input type="text" class="form-control" id="race" value="{{ char.race }}" name="race" required>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label class="control-label col-sm-2" for="class">Class:</label>
-            <div class="col-sm-10">
-                <input type="text" class="form-control" id="class" value="{{ char.class }}" name="class" required>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label class="control-label col-sm-2" for="spell_save">Spell Save DC:</label>
-            <div class="col-sm-10">
-                <input type="number" min="0" max="50" class="form-control" id="spell_save" value="{{ char.spell_save }}" name="spell_save" required>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label class="control-label col-sm-2" for="ac">AC:</label>
-            <div class="col-sm-10">
-                <input type="number" min="1" max="50" class="form-control" id="ac" value="{{ char.ac }}" name="ac" required>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label class="control-label col-sm-2" for="hp">Max HP:</label>
-            <div class="col-sm-10">
-                <input type="number" min="1" max="400" class="form-control" id="hp" value="{{ char.hp }}" name="hp" required>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-sm-10">
-                <input class="form-control" id="id" value="{{ char.id }}" name="id" type="hidden">
-            </div>
-        </div>
-
-        <div>
             <div class="form-group">
+                <label class="control-label col-sm-2" for="name">Name:</label>
                 <div class="col-sm-10">
-                    <button type="submit" class="btn btn-default">Edit Character</button>
+                    <input type="text" class="form-control" id="name" value="{{ char.name }}" name="name" required>
                 </div>
             </div>
-        </div>
+
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="race">Race:</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="race" value="{{ char.race }}" name="race" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="class">Class:</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="class" value="{{ char.class }}" name="class" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="spell_save">Spell Save DC:</label>
+                <div class="col-sm-10">
+                    <input type="number" min="0" max="50" class="form-control" id="spell_save"
+                        value="{{ char.spell_save }}" name="spell_save" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="ac">AC:</label>
+                <div class="col-sm-10">
+                    <input type="number" min="1" max="50" class="form-control" id="ac" value="{{ char.ac }}" name="ac"
+                        required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="hp">Max HP:</label>
+                <div class="col-sm-10">
+                    <input type="number" min="1" max="400" class="form-control" id="hp" value="{{ char.hp }}" name="hp"
+                        required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-10">
+                    <input class="form-control" id="id" value="{{ char.id }}" name="id" type="hidden">
+                </div>
+            </div>
+
+            <div>
+                <div class="form-group">
+                    <div class="col-sm-10">
+                        <button type="submit" class="btn btn-default">Save Character</button>
+                    </div>
+                </div>
+            </div>
         </form>
     </div>
 
     <div class="form-style">
         <form action="{{ url_for('delete_char') }}" method=post>
-            <button type="submit" class="btn btn-default" name="delete_char" value="{{ char.id }}">Delete Character</button>
+            <button type="submit" class="btn btn-default" name="delete_char" value="{{ char.id }}">Delete
+                Character</button>
         </form>
     </div>
 </div>
