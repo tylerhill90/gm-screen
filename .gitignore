@@ -7,4 +7,5 @@
 !*.html
 !*.db
 !*.png
+!Procfile
 !.gitignore
