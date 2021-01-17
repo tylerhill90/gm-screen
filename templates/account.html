@@ -30,7 +30,7 @@
 
     <br>
     {% if campaigns %}
-    <form id="old_camp" action="{{ url_for('retrieve_old_campaign') }}" method=post>
+    <form id="old_camp" action="{{ url_for('account') }}" method=post>
         <select id="old_camp" name="old_camp">
             {% for campaign in campaigns %}
                 <option value="{{ campaign }}">{{ campaign }}</option>

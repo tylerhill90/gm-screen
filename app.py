@@ -118,6 +118,17 @@ def login():
 def account():
     """User's account."""
 
+    if request.method == "POST":
+        if request.form.get('old_camp'):
+            session["camp_name"] = request.form['old_camp']
+
+            # query db for correct campaign_id and cache it
+            query = db.execute('SELECT * FROM campaigns WHERE user_id=:user_id AND campaign_name=:camp_name',
+                               user_id=session["user_id"], camp_name=session["camp_name"])
+            session["camp_id"] = query[0]['id']
+
+            return redirect(url_for("campaign_editor"))
+
     # get username
     query = db.execute(
         'SELECT username FROM users WHERE id=:user_id', user_id=session["user_id"])
@@ -128,8 +139,6 @@ def account():
         'SELECT campaign_name FROM campaigns WHERE user_id=:user_id', user_id=session["user_id"])
     campaigns = [query[x]['campaign_name'].strip(
         "'") for x in range(len(query))]
-
-    print(query)
 
     return render_template("account.html", username=username, campaigns=campaigns)
 
@@ -151,6 +160,19 @@ def campaign_editor():
 
     # if user reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
+        if request.form.get('name'):
+            # query db for correct campaign_id and cache it
+            query = db.execute('SELECT * FROM campaigns WHERE user_id=:user_id AND campaign_name=:camp_name',
+                               user_id=session["user_id"], camp_name=session["camp_name"])
+            session["camp_id"] = query[0]['id']
+
+            # store new character infor in db
+            name, race, class_, spell_save, ac, hp = request.form['name'], request.form['race'], request.form[
+                'class'], request.form['spell_save'], request.form['ac'], request.form['hp']
+            db.execute('INSERT INTO "characters" ("id","campaign_id","name","race","class", "spell_save", "ac","hp") VALUES (NULL,:camp_id,:name,:race,:class_,:spell_save,:ac,:hp)',
+                       camp_id=session["camp_id"], name=name, race=race, class_=class_, spell_save=spell_save, ac=ac, hp=hp)
+
+            return redirect(url_for("campaign_editor"))
 
         # if user is editing a new campaign with a distinct name, display and store its name
         query = db.execute(
@@ -206,73 +228,28 @@ def play_campaign():
     return render_template("play_campaign.html", camp_name=session["camp_name"].strip("'"), chars=chars)
 
 
-@app.route("/store_char", methods=["GET", "POST"])
-def store_char():
-    """Store a new character in the db."""
-    # if user reached route via POST (as by submitting a form via POST)
-    if request.method == "POST":
-        if request.form['name']:
-            # query db for correct campaign_id and cache it
-            query = db.execute('SELECT * FROM campaigns WHERE user_id=:user_id AND campaign_name=:camp_name',
-                               user_id=session["user_id"], camp_name=session["camp_name"])
-            session["camp_id"] = query[0]['id']
-
-            # store new character infor in db
-            name, race, class_, spell_save, ac, hp = request.form['name'], request.form['race'], request.form[
-                'class'], request.form['spell_save'], request.form['ac'], request.form['hp']
-            db.execute('INSERT INTO "characters" ("id","campaign_id","name","race","class", "spell_save", "ac","hp") VALUES (NULL,:camp_id,:name,:race,:class_,:spell_save,:ac,:hp)',
-                       camp_id=session["camp_id"], name=name, race=race, class_=class_, spell_save=spell_save, ac=ac, hp=hp)
-
-            return redirect(url_for("campaign_editor"))
-
-    else:
-        return redirect(url_for("campaign_editor"))
-
-
-@app.route("/retrieve_old_campaign", methods=["GET", "POST"])
-def retrieve_old_campaign():
-    """Retrieve an old campaign and pass it to the editor page"""
-    # if user reached route via POST (as by submitting a form via POST)
-    if request.method == "POST":
-        if request.form['old_camp']:
-            session["camp_name"] = request.form['old_camp']
-
-            # query db for correct campaign_id and cache it
-            query = db.execute('SELECT * FROM campaigns WHERE user_id=:user_id AND campaign_name=:camp_name',
-                               user_id=session["user_id"], camp_name=session["camp_name"])
-            session["camp_id"] = query[0]['id']
-
-            return redirect(url_for("campaign_editor"))
-
-    else:
-        return redirect(url_for("campaign_editor"))
-
-
 @app.route("/edit_char", methods=["GET", "POST"])
 def edit_char():
     """Edit a character."""
 
-    # query db for existing characters in the appropriate campaign
-    char = db.execute(
-        'SELECT id, name, race, class, spell_save, ac, hp FROM characters WHERE id=:id_', id_=request.form['edit_char'])
-    char = char[0]
-    for key, value in char.items():
-        if type(value) is str:
-            char[key] = value.strip("'")
+    if request.method == 'POST':
+        if request.form.get('name'):
+            name, race, class_, spell_save, ac, hp, id_ = request.form['name'], request.form['race'], request.form[
+                'class'], request.form['spell_save'], request.form['ac'], request.form['hp'], request.form['id']
+            db.execute('UPDATE characters SET name=:name, race=:race, class=:class_, spell_save=:spell_save, ac=:ac, hp=:hp WHERE id=:id_',
+                    name=name, race=race, class_=class_, spell_save=spell_save, ac=ac, hp=hp, id_=id_)
 
-    return render_template("edit_char.html", char=char)
+            return redirect(url_for("campaign_editor"))
 
+        # query db for existing characters in the appropriate campaign
+        char = db.execute(
+            'SELECT id, name, race, class, spell_save, ac, hp FROM characters WHERE id=:id_', id_=request.form['edit_char'])
+        char = char[0]
+        for key, value in char.items():
+            if type(value) is str:
+                char[key] = value.strip("'")
 
-@app.route("/update_char", methods=["GET", "POST"])
-def update_char():
-    """Update an existing character."""
-
-    name, race, class_, spell_save, ac, hp, id_ = request.form['name'], request.form['race'], request.form[
-        'class'], request.form['spell_save'], request.form['ac'], request.form['hp'], request.form['id']
-    db.execute('UPDATE characters SET name=:name, race=:race, class=:class_, spell_save=:spell_save, ac=:ac, hp=:hp WHERE id=:id_',
-               name=name, race=race, class_=class_, spell_save=spell_save, ac=ac, hp=hp, id_=id_)
-
-    return redirect(url_for("campaign_editor"))
+        return render_template("edit_char.html", char=char)
 
 
 @app.route("/delete_char", methods=["GET", "POST"])
