@@ -237,7 +237,7 @@ def edit_char():
             name, race, class_, spell_save, ac, hp, id_ = request.form['name'], request.form['race'], request.form[
                 'class'], request.form['spell_save'], request.form['ac'], request.form['hp'], request.form['id']
             db.execute('UPDATE characters SET name=:name, race=:race, class=:class_, spell_save=:spell_save, ac=:ac, hp=:hp WHERE id=:id_',
-                    name=name, race=race, class_=class_, spell_save=spell_save, ac=ac, hp=hp, id_=id_)
+                       name=name, race=race, class_=class_, spell_save=spell_save, ac=ac, hp=hp, id_=id_)
 
             return redirect(url_for("campaign_editor"))
 
@@ -263,4 +263,5 @@ def delete_char():
 
 
 if __name__ == "__main__":
+    app.secret_key = b'\xabTA?\xe1\xb2\xa8\xd5\xeb\xfaJ{T)\x96~'
     app.run(debug=False)
