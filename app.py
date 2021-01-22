@@ -2,12 +2,14 @@
 
 import sqlite3 as sql
 import os
+import sys
+import logging
+
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 from flask_session import Session
 from passlib.apps import custom_app_context as pwd_context
 from tempfile import mkdtemp
 from flask_sqlalchemy import SQLAlchemy
-import datetime
 
 
 def apology(message, code=400):
@@ -27,7 +29,8 @@ def apology(message, code=400):
 
 # configure application
 app = Flask(__name__)
-
+app.logger.addHandler(logging.StreamHandler(sys.stdout))
+app.logger.setLevel(logging.ERROR)
 
 # ensure responses aren't cached
 if app.config["DEBUG"]:
@@ -107,12 +110,10 @@ def register():
         # if user input correct then store the user's info in the database after hashing their password
         else:
             hash = pwd_context.hash(request.form.get('password'))
-            result = query_db("INSERT INTO users (username, hash) VALUES(?, ?)",
-                                (request.form.get('username'), hash))
-            if not result:
-                return apology('Failure to signup new user.')
-            else:
-                return render_template('login.html')
+            update_db("INSERT INTO users (username, hash) VALUES(?, ?)",
+                      (request.form.get('username'), hash))
+
+            return render_template('login.html')
 
     # else if user reached route via GET (as by clicking a link or via redirect)
     else:
@@ -130,14 +131,15 @@ def login():
     if request.method == "POST":
 
         # query database for username
-        rows = query_db("SELECT * FROM users WHERE username = ?", (request.form.get("username"),))
+        rows = query_db("SELECT * FROM users WHERE username = ?",
+                        (request.form.get("username"),))
 
         # ensure username exists and password is correct
         if len(rows) != 1 or not pwd_context.verify(request.form.get("password"), rows[0]["hash"]):
             return apology("invalid username and/or password")
 
         # remember which user has logged in
-        session["user_id"]=rows[0]["id"]
+        session["user_id"] = rows[0]["id"]
 
         # redirect user to home page
         return redirect(url_for("account"))
@@ -153,12 +155,12 @@ def account():
 
     if request.method == "POST":
         if request.form.get('old_camp'):
-            session["camp_name"]=request.form['old_camp']
+            session["camp_name"] = request.form['old_camp']
 
             # query db for correct campaign_id and cache it
             query = query_db('SELECT * FROM campaigns WHERE user_id = ? AND campaign_name = ?',
-                               (session["user_id"], session["camp_name"]))
-            session["camp_id"]=query[0]['id']
+                             (session["user_id"], session["camp_name"]))
+            session["camp_id"] = query[0]['id']
 
             return redirect(url_for("campaign_editor"))
 
@@ -196,14 +198,14 @@ def campaign_editor():
         if request.form.get('name'):
             # query db for correct campaign_id and cache it
             query = query_db('SELECT * FROM campaigns WHERE user_id = ? AND campaign_name = ?',
-                               (session["user_id"], session["camp_name"]))
-            session["camp_id"]=query[0]['id']
+                             (session["user_id"], session["camp_name"]))
+            session["camp_id"] = query[0]['id']
 
             # store new character infor in db
-            name, race, class_, spell_save, ac, hp=request.form['name'], request.form['race'], request.form[
+            name, race, class_, spell_save, ac, hp = request.form['name'], request.form['race'], request.form[
                 'class'], request.form['spell_save'], request.form['ac'], request.form['hp']
             update_db('INSERT INTO "characters" ("id","campaign_id","name","race","class", "spell_save", "ac","hp") VALUES (NULL, ?, ?, ?, ?, ?, ?, ?)',
-                       (session["camp_id"], name, race, class_, spell_save, ac, hp))
+                      (session["camp_id"], name, race, class_, spell_save, ac, hp))
 
             return redirect(url_for("campaign_editor"))
 
@@ -214,11 +216,11 @@ def campaign_editor():
             return apology('That campaign name already exists for this account. Please choose a distinct name.')
 
         elif request.form['new_camp']:
-            session["camp_name"]=request.form['new_camp']
+            session["camp_name"] = request.form['new_camp']
             update_db('INSERT INTO "campaigns" ("id","user_id","campaign_name") VALUES (NULL, ?, ?)',
-                       (session["user_id"], session["camp_name"]))
+                      (session["user_id"], session["camp_name"]))
             session["camp_id"] = query_db('SELECT id FROM campaigns WHERE user_id = ? AND campaign_name = ?',
-                                            (session["user_id"], session["camp_name"]))
+                                          (session["user_id"], session["camp_name"]))
 
             return render_template("campaign_editor.html", camp_name=session["camp_name"].strip("'"), chars=[], camp_id=session["camp_id"])
 
@@ -234,7 +236,7 @@ def campaign_editor():
         for char in chars:
             for key, value in char.items():
                 if type(value) is str:
-                    char[key]=value.strip("'")
+                    char[key] = value.strip("'")
 
         return render_template("campaign_editor.html", camp_name=session["camp_name"].strip("'"), chars=chars, camp_id=session["camp_id"])
 
@@ -244,19 +246,19 @@ def play_campaign():
     """Play a campaign."""
 
     # cache campaign name
-    session["camp_name"]=request.form['play_camp']
+    session["camp_name"] = request.form['play_camp']
 
     # Query db for correct campaign_id and cache it
     query = query_db('SELECT * FROM campaigns WHERE user_id = ? AND campaign_name = ?',
-                       (session["user_id"], session["camp_name"]))
-    session["camp_id"]=query[0]['id']
+                     (session["user_id"], session["camp_name"]))
+    session["camp_id"] = query[0]['id']
 
     # Query db for existing characters in the appropriate campaign
     chars = query_db(
         'SELECT name, race, class, spell_save, ac, hp FROM characters WHERE campaign_id = ?', (session["camp_id"],))
     for char in chars:
         for key, value in char.items():
-            char[key]=value.strip("'")
+            char[key] = value.strip("'")
 
     return render_template("play_campaign.html", camp_name=session["camp_name"].strip("'"), chars=chars)
 
@@ -267,20 +269,20 @@ def edit_char():
 
     if request.method == 'POST':
         if request.form.get('name'):
-            name, race, class_, spell_save, ac, hp, id_=request.form['name'], request.form['race'], request.form[
+            name, race, class_, spell_save, ac, hp, id_ = request.form['name'], request.form['race'], request.form[
                 'class'], request.form['spell_save'], request.form['ac'], request.form['hp'], request.form['id']
             update_db('UPDATE characters SET name = ?, race = ?, class = ?, spell_save = ?, ac = ?, hp = ? WHERE id = ?',
-                       (name, race, class_, spell_save, ac, hp, id_))
+                      (name, race, class_, spell_save, ac, hp, id_))
 
             return redirect(url_for("campaign_editor"))
 
         # query db for existing characters in the appropriate campaign
         char = query_db(
             'SELECT id, name, race, class, spell_save, ac, hp FROM characters WHERE id = ?', (request.form['edit_char'],))
-        char=char[0]
+        char = char[0]
         for key, value in char.items():
             if type(value) is str:
-                char[key]=value.strip("'")
+                char[key] = value.strip("'")
 
         return render_template("edit_char.html", char=char)
 
@@ -289,12 +291,12 @@ def edit_char():
 def delete_char():
     """Update an existing character."""
 
-    id_=request.form['delete_char']
+    id_ = request.form['delete_char']
     update_db('DELETE FROM characters WHERE id = ?', (id_,))
 
     return redirect(url_for("campaign_editor"))
 
 
 if __name__ == "__main__":
-    app.secret_key=b'\xabTA?\xe1\xb2\xa8\xd5\xeb\xfaJ{T)\x96~'
+    app.secret_key = b'\xabTA?\xe1\xb2\xa8\xd5\xeb\xfaJ{T)\x96~'
     app.run(debug=False)

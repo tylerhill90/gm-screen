@@ -1,18 +1,18 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    Home Page
+Home Page
 {% endblock %}
 
 {% block main %}
 <style>
-    h1{
+    h1 {
         font-family: "Freckle Face", cursive;
         text-align: center;
         font-size: 36px;
     }
 
-    p{
+    p {
         text-align: center;
         font-size: 16px;
     }
@@ -20,7 +20,27 @@
 <h1>
     GM Screen
 </h1>
-<p>
-    GM Screen is a web based platform for game masters to keep track of player stats, current effects, and track initiative order.
-</p>
+<div style="padding:50px;">
+    <p style="font-size: large;">
+        GM Screen is a web based platform for game masters to keep track of player stats and track initiative order.
+    </p>
+    <div style="width:75%;">
+        <p style="text-align: left;">
+            <br><br>
+            <strong>NOTE</strong>
+            <br>
+            Currently the app encounters a lot of "Internal Server Errors" hosted on Heroku. I am not sure why
+            this is happening as the code runs fine on a local machine.
+
+            <br><br>
+            <strong>QUICK FIX</strong>
+            <br>If you wait and then reload the page it will eventually work as intended. Multiple reloads are
+            sometimes necessary.
+
+            <br><br>Since this web app is just a pet project I made to learn the basics of web dev and database
+            management I am shelving the issue for now and starting work on a different, more refined and stylized app
+            for logging boulder problems on home climbing walls.
+        </p>
+    </div>
+</div>
 {% endblock %}
